@@ -29,4 +29,18 @@ interface PurchasedItemInterface
      * @return array
      */
     public function getChange();
+
+    /**
+     * returns the amount missing for the payment
+     *
+     * @return float
+     */
+    public function getAmountMissing(): float;
+
+    /**
+     * return true if some amount is missing
+     *
+     * @return bool
+     */
+    public function isSomeAmountMissing(): bool;
 }

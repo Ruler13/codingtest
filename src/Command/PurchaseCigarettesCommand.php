@@ -7,6 +7,9 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use App\Machine\CigaretteMachine;
+use App\Machine\PurchaseTransaction;
+use App\Machine\AmountNotEnoughException;
 
 /**
  * Class CigaretteMachine
@@ -34,23 +37,34 @@ class PurchaseCigarettesCommand extends Command
         $itemCount = (int) $input->getArgument('packs');
         $amount = (float) \str_replace(',', '.', $input->getArgument('amount'));
 
+        $success_msg = 'You bought <info>%d</info> packs of cigarettes for <info>%.2f</info>, each for <info>%.2f</info>.';
+        $failure_msg = 'You tried to buy <info>%d</info> packs of cigarettes but you paid <info>%.2f</info>, you still have to pay <info>%.2f</info>. Please purchase again.';
 
-        // $cigaretteMachine = new CigaretteMachine();
-        // ...
 
-        $output->writeln('You bought <info>...</info> packs of cigarettes for <info>...</info>, each for <info>...</info>. ');
-        $output->writeln('Your change is:');
+        $cigaretteMachine = new CigaretteMachine();
+        $purchaseTransaction = new PurchaseTransaction($itemCount, $amount);
+        try {
+            $purchasedItem = $cigaretteMachine->execute($purchaseTransaction);
+            $output->writeln(sprintf(
+                $success_msg,
+                $purchasedItem->getItemQuantity(),
+                $purchasedItem->getTotalAmount(),
+                CigaretteMachine::ITEM_PRICE
+            ));
+            $output->writeln('Your change is:');
 
-        $table = new Table($output);
-        $table
-            ->setHeaders(array('Coins', 'Count'))
-            ->setRows(array(
-                // ...
-                array('0.02', '0'),
-                array('0.01', '0'),
-            ))
-        ;
-        $table->render();
-
+            $table = new Table($output);
+            $table
+                ->setHeaders(array('Coins', 'Count'))
+                ->setRows($purchasedItem->getChange());
+            $table->render();
+        } catch (AmountNotEnoughException $e) {
+            $output->writeln(sprintf(
+                $failure_msg,
+                $purchaseTransaction->getItemQuantity(),
+                $purchaseTransaction->getPaidAmount(),
+                $e->getAmount()
+            ));
+        }
     }
 }
