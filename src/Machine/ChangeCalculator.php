@@ -33,8 +33,9 @@ class ChangeCalculator
     {
         $totalInCash = [];
         foreach (self::$availableCash as $cash) {
-            // Multiply by 100 and ceil to avoid calculation with floating numbers
-            $count = self::calculateCash(ceil($totalMissing * 100), $cash * 100);
+            // Use round function to round off the floating value upto two decimal place
+            // Avoid unexpected comparision result with float
+            $count = self::calculateCash(round($totalMissing, 2), $cash);
             if ($count > 0) {
                 $totalInCash[] = [sprintf('%.2f', $cash), $count];
                 $totalMissing -= $cash * $count;
@@ -45,11 +46,11 @@ class ChangeCalculator
     }
 
     /**
-     * @param int $totalMissing
-     * @param int $cash
+     * @param float $totalMissing
+     * @param float $cash
      * @return int
      */
-    private static function calculateCash(int $totalMissing, int $cash): int
+    private static function calculateCash(float $totalMissing, float $cash): int
     {
         if ($totalMissing < $cash) {
             return 0;
