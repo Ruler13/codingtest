@@ -38,7 +38,7 @@ class PurchaseCigarettesCommand extends Command
         $amount = (float) \str_replace(',', '.', $input->getArgument('amount'));
 
         $success_msg = 'You bought <info>%d</info> packs of cigarettes for <info>%.2f</info>, each for <info>%.2f</info>.';
-        $failure_msg = 'You tried to buy <info>%d</info> packs of cigarettes but you paid <info>%.2f</info>, you still have to pay <info>%.2f</info>. Please purchase again.';
+        $failure_msg = 'You tried to buy <info>%d</info> packs of cigarettes but you paid <info>%.2f</info>, you need to pay <info>%.2f</info> more. Please purchase again.';
 
 
         $cigaretteMachine = new CigaretteMachine();

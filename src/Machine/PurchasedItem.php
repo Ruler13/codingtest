@@ -4,6 +4,7 @@ namespace App\Machine;
 
 class PurchasedItem implements PurchasedItemInterface
 {
+    use ChangeCalculator;
 
     /**
      * @var PurchaseTransactionInterface
@@ -48,7 +49,7 @@ class PurchasedItem implements PurchasedItemInterface
      */
     public function getChange(): array
     {
-        return ChangeCalculator::calculate(
+        return $this->calculate(
             $this->purchaseTransaction->getPaidAmount() - $this->getTotalAmount()
         );
     }

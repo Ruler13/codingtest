@@ -2,12 +2,12 @@
 
 namespace App\Machine;
 
-class ChangeCalculator
+trait ChangeCalculator
 {
     /**
      * @var array A list of available cash values
      */
-    private static $availableCash = [
+    private $availableCash = [
         500.00,
         200.00,
         100.00,
@@ -29,13 +29,13 @@ class ChangeCalculator
      * @param float $totalMissing
      * @return array
      */
-    public static function calculate(float $totalMissing): array
+    public function calculate(float $totalMissing): array
     {
         $totalInCash = [];
-        foreach (self::$availableCash as $cash) {
+        foreach ($this->availableCash as $cash) {
             // Use round function to round off the floating value upto two decimal place
             // Avoid unexpected comparision result with float
-            $count = self::calculateCash(round($totalMissing, 2), $cash);
+            $count = $this->calculateCash(round($totalMissing, 2), $cash);
             if ($count > 0) {
                 $totalInCash[] = [sprintf('%.2f', $cash), $count];
                 $totalMissing -= $cash * $count;
@@ -50,12 +50,12 @@ class ChangeCalculator
      * @param float $cash
      * @return int
      */
-    private static function calculateCash(float $totalMissing, float $cash): int
+    private function calculateCash(float $totalMissing, float $cash): int
     {
         if ($totalMissing < $cash) {
             return 0;
         }
 
-        return self::calculateCash($totalMissing - $cash, $cash) + 1;
+        return $this->calculateCash($totalMissing - $cash, $cash) + 1;
     }
 }
